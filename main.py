@@ -1,22 +1,23 @@
-import gamedatabase
+import threading
 
-database = gamedatabase.PandasDatabase()
-test_dict = {'user_id': [12345, 23456, 56789], 'username': ['Jojo', 'Kiki', 'Rori'],
-                          'user_location': ['greenvale', 'river_bank', 'forest']}
-test_locations_dict = {'name':
-                           ['greenvale', 'forest'],
-                       'visitors':
-                           [[111, 222],[333, 444]],
-                       'objects':
-                           [['bench', 'stairs'],['frog', 'mushroom']]}
-database.initialize_from_dict(test_dict, 'user_id')
+from main.common.utils.application import Application
+from main.common.utils.console_UI import ConsoleUI
 
 if __name__ == '__main__':
-    print(database.dataframe.index[0])
-    print(type(database.dataframe.index[0]))
-    database.add_line(123)
-    print(database.dataframe.index[3])
-    print(type(database.dataframe.index[3]))
+    application = Application()
+    print('app created')
+    console_UI = ConsoleUI(application.command_queue, application.response_queue)
+    print('ui created')
+    app_input_thread = threading.Thread(target=application.process_command)
+    UI_input_thread = threading.Thread(target=console_UI.read_command)
+    UI_output_thread = threading.Thread(target=console_UI.output_command)
+    print('Threads Created')
+    app_input_thread.start()
+    print('app thread started')
+    UI_input_thread.start()
+    print('input thread started')
+    UI_output_thread.start()
+    print('output thread started')
 
 
 

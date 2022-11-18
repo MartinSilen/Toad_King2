@@ -1,7 +1,13 @@
 import threading
 from abc import ABC, abstractmethod
-
+from pymongo import MongoClient
 import pandas
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
 
 
 class AlreadyInitialized(Exception):
@@ -161,3 +167,28 @@ class PandasDatabase(DatabaseInterface):
             with open(filepath, 'w') as file:
                 pass
             self.dataframe.to_csv(filepath)
+
+
+class MongoDatabase:
+
+    def __init__(self, database_name, collection_name):
+        self.client = MongoClient(DATABASE_CONNECTION_STRING)
+        self.database = self.client[database_name]
+        self.collection = self.database[collection_name]
+
+    def modify_value(self, document_id, value_name, new_value):
+        self.collection.update_one({'identifier': document_id}, {'$set': {value_name: new_value}})
+
+    def get_document(self, document_id):
+        return self.collection.find_one({'identifier': document_id})
+
+    def insert_document(self, document):
+        self.collection.insert_one(document)
+
+    def delete_document(self, document_id):
+        self.collection.delete_one({'identifier': document_id})
+
+
+
+
+

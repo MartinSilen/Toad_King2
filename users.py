@@ -1,6 +1,7 @@
-import dataclasses
 import threading
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+
 from commandhandlers import CommandHandlerInterface
 
 from gamedatabase import DatabaseInterface
@@ -29,11 +30,21 @@ class UserManagerInterface(ABC):
         pass
 
 
-@dataclasses.dataclass
+@dataclass
+class ActiveAbility:
+    ability_name: str
+    cooldown: int = 0
+
+
+@dataclass
 class ActiveUser:
+    identifier: int
     user_info: dict
+    character_name: str
+    character_active_abilities: [ActiveAbility] = None
     command_handler: CommandHandlerInterface = None
     inactivity_counter: int = 0
+
 
 
 class UserManager(UserManagerInterface):
